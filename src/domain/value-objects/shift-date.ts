@@ -1,7 +1,7 @@
 export class ShiftDate {
-    public readonly year: number;
-    public readonly month: number;
-    public readonly day: number;
+    readonly year: number;
+    readonly month: number;
+    readonly day: number;
 
     constructor(date: Date) {
         this.year = date.getFullYear();

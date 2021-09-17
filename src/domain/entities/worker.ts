@@ -1,23 +1,27 @@
 import { createId, Id } from "../value-objects/id";
-import { Result } from "../value-objects/result";
-import { isValidWorkingShifts, WorkingShift, WorkingShifts } from "./working-shift";
+import { isError, Result } from "../value-objects/result";
+import { ShiftKind } from "../value-objects/shift";
+import { ShiftDate } from "../value-objects/shift-date";
+import { WorkingShift } from "../value-objects/working-shift";
+import { isValidWorkingShifts, removeWorkingShift, updateWorkingShift, WorkingShifts } from "../value-objects/working-shifts";
 
 export class Worker {
-    public readonly id: Id;
+    readonly id: Id;
+    readonly firstName: string;
+    readonly lastName: string;
+    private readonly _workingShifts: WorkingShifts;
 
-    static create(firstName: string, lastName: string, workShifts: WorkingShifts, id?: Id): Result<Worker> {
-        return isValidWorkingShifts(workShifts)
-            ? new Worker(firstName, lastName, workShifts, id)
+    static create(firstName: string, lastName: string, workingShifts: WorkingShifts, id?: Id): Result<Worker> {
+        return isValidWorkingShifts(workingShifts)
+            ? new Worker(firstName, lastName, workingShifts, id)
             : new Error("Worker cannot be created with invalid working shifts.");
     }
 
-    private constructor(
-        readonly firstName: string,
-        readonly lastName: string,
-        private readonly _workingShifts: WorkingShifts,
-        id?: Id,
-    ) {
+    private constructor(firstName: string, lastName: string, workingShifts: WorkingShifts, id?: Id) {
         this.id = id ? id : createId();
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this._workingShifts = workingShifts;
     }
 
     get workingShifts(): WorkingShifts {
@@ -29,5 +33,19 @@ export class Worker {
         if (!isValidWorkingShifts(newWorkingShifts)) return new Error("Shift cannot be added.");
 
         return new Worker(this.firstName, this.lastName, newWorkingShifts, this.id);
+    }
+
+    unassignWorkingShift(onDate: ShiftDate): Result<Worker> {
+        const updatedWorkingShifts = removeWorkingShift(this.workingShifts)(onDate);
+        if (isError(updatedWorkingShifts)) return updatedWorkingShifts;
+
+        return new Worker(this.firstName, this.lastName, updatedWorkingShifts, this.id);
+    }
+
+    changeWorkingShift(onDate: ShiftDate, toKind: ShiftKind): Result<Worker> {
+        const updatedWorkingShifts = updateWorkingShift(this.workingShifts)(onDate, new WorkingShift(onDate, toKind));
+        if (isError(updatedWorkingShifts)) return updatedWorkingShifts;
+
+        return new Worker(this.firstName, this.lastName, updatedWorkingShifts, this.id);
     }
 }
