@@ -5,10 +5,8 @@ export class WorkingShift {
     readonly date: ShiftDate;
     readonly shift: Shift;
 
-    constructor(date: Date, kind: ShiftKind);
-    constructor(date: ShiftDate, kind: ShiftKind);
-    constructor(date: ShiftDate | Date, kind: ShiftKind) {
-        this.date = date instanceof Date ? new ShiftDate(date) : date;
+    constructor(date: ShiftDate, kind: ShiftKind) {
+        this.date = date;
         this.shift = createShift(kind);
     }
 }

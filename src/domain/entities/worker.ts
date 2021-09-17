@@ -42,8 +42,8 @@ export class Worker {
         return new Worker(this.firstName, this.lastName, updatedWorkingShifts, this.id);
     }
 
-    changeWorkingShift(onDate: ShiftDate, toKind: ShiftKind): Result<Worker> {
-        const updatedWorkingShifts = updateWorkingShift(this.workingShifts)(onDate, new WorkingShift(onDate, toKind));
+    changeWorkingShift(onDate: ShiftDate, update: ShiftKind): Result<Worker> {
+        const updatedWorkingShifts = updateWorkingShift(this.workingShifts)(onDate, update);
         if (isError(updatedWorkingShifts)) return updatedWorkingShifts;
 
         return new Worker(this.firstName, this.lastName, updatedWorkingShifts, this.id);

@@ -1,4 +1,5 @@
 import { Result } from "./result";
+import { ShiftKind } from "./shift";
 import { ShiftDate } from "./shift-date";
 import { WorkingShift } from "./working-shift";
 
@@ -13,8 +14,8 @@ export const removeWorkingShift =
 
 export const updateWorkingShift =
     (workingShifts: WorkingShifts) =>
-    (onDate: ShiftDate, update: WorkingShift): Result<WorkingShifts> =>
-        processWorkingShift(workingShifts)(onDate, (i, ws) => (ws[i] = update));
+    (onDate: ShiftDate, update: ShiftKind): Result<WorkingShifts> =>
+        processWorkingShift(workingShifts)(onDate, (i, ws) => (ws[i] = new WorkingShift(onDate, update)));
 
 const processWorkingShift =
     (workingShifts: WorkingShifts) =>
