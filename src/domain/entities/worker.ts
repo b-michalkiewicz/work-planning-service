@@ -12,9 +12,11 @@ export class Worker {
     private readonly _workingShifts: WorkingShifts;
 
     static create(firstName: string, lastName: string, workingShifts: WorkingShifts, id?: Id): Result<Worker> {
-        return isValidWorkingShifts(workingShifts)
-            ? new Worker(firstName, lastName, workingShifts, id)
-            : new Error("Worker cannot be created with invalid working shifts.");
+        if (!firstName || !lastName) return new Error("Worker cannot be created with empty first or last name.");
+
+        if (!isValidWorkingShifts(workingShifts)) return new Error("Worker cannot be created with invalid working shifts.");
+
+        return new Worker(firstName, lastName, workingShifts, id);
     }
 
     private constructor(firstName: string, lastName: string, workingShifts: WorkingShifts, id?: Id) {
