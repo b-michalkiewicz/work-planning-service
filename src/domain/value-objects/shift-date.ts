@@ -1,18 +1,34 @@
 import { Result } from "./result";
 
-export class ShiftDate {
-    readonly year: number;
-    readonly month: number;
-    readonly day: number;
+export type ShiftDateProps = {
+    year: number;
+    month: number;
+    day: number;
+};
 
-    static create(date: Date): Result<ShiftDate> {
-        return Number.isNaN(date.valueOf()) ? new Error("ShiftDate cannot be created from invalid date.") : new ShiftDate(date);
+export class ShiftDate {
+    private readonly props: ShiftDateProps;
+
+    static create(props: ShiftDateProps): Result<ShiftDate> {
+        return Number.isNaN(new Date(shiftDatePropsToString(props)).valueOf())
+            ? new Error("ShiftDate cannot be created from invalid date.")
+            : new ShiftDate(props);
     }
 
-    private constructor(date: Date) {
-        this.year = date.getFullYear();
-        this.month = date.getMonth() + 1; // thank you JavaScript
-        this.day = date.getDate();
+    private constructor(props: ShiftDateProps) {
+        this.props = props;
+    }
+
+    get year(): number {
+        return this.props.year;
+    }
+
+    get month(): number {
+        return this.props.month;
+    }
+
+    get day(): number {
+        return this.props.day;
     }
 
     equals({ year, month, day }: ShiftDate): boolean {
@@ -20,6 +36,10 @@ export class ShiftDate {
     }
 
     toString(): string {
-        return `${this.year}-${this.month}-${this.day}`;
+        return shiftDatePropsToString(this.props);
     }
 }
+
+const padWithLeadingZero = (s: string) => (s.length < 2 ? s.padStart(2, "0") : s);
+const shiftDatePropsToString = ({ year, month, day }: ShiftDateProps) =>
+    `${year}-${padWithLeadingZero(month.toString())}-${padWithLeadingZero(day.toString())}`;

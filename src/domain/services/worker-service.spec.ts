@@ -155,4 +155,4 @@ const workerMock: Worker = {
 
 const service = new WorkerService(mockRepository);
 const workerId = "id" as Id;
-const ws = new WorkingShift(ShiftDate.create(new Date("2020")) as ShiftDate, "day");
+const ws = new WorkingShift(ShiftDate.create({ year: 2020, month: 1, day: 1 }) as ShiftDate, "day");

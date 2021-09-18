@@ -4,8 +4,8 @@ import { ShiftDate } from "../value-objects/shift-date";
 import { WorkingShift } from "../value-objects/working-shift";
 import { Worker } from "./worker";
 
-const ws2020 = new WorkingShift(ShiftDate.create(new Date("2020")) as ShiftDate, "day");
-const ws2021 = new WorkingShift(ShiftDate.create(new Date("2021")) as ShiftDate, "day");
+const ws2020 = new WorkingShift(ShiftDate.create({ year: 2020, month: 1, day: 1 }) as ShiftDate, "day");
+const ws2021 = new WorkingShift(ShiftDate.create({ year: 2021, month: 1, day: 1 }) as ShiftDate, "day");
 
 describe("Worker", () => {
     describe("create", () => {
@@ -47,7 +47,7 @@ describe("Worker", () => {
     describe("unassignWorkingShift", () => {
         it("returns error when there is no shift at given day", () => {
             expect(assertAndGetCorrectWorker().unassignWorkingShift(ws2021.date)).toEqual(
-                new Error("Shift on 2021-1-1 not found."),
+                new Error("Shift on 2021-01-01 not found."),
             );
         });
 
@@ -61,14 +61,16 @@ describe("Worker", () => {
     describe("changeWorkingShift", () => {
         it("returns error when there is no shift at given day", () => {
             expect(assertAndGetCorrectWorker().changeWorkingShift(ws2021.date, "morning")).toEqual(
-                new Error("Shift on 2021-1-1 not found."),
+                new Error("Shift on 2021-01-01 not found."),
             );
         });
 
         it("changes working shift", () => {
             const worker = assertAndGetCorrectWorker().changeWorkingShift(ws2020.date, "night");
             if (isError(worker)) fail();
-            expect(worker.workingShifts).toEqual([new WorkingShift(ShiftDate.create(new Date("2020")) as ShiftDate, "night")]);
+            expect(worker.workingShifts).toEqual([
+                new WorkingShift(ShiftDate.create({ year: 2020, month: 1, day: 1 }) as ShiftDate, "night"),
+            ]);
         });
     });
 
