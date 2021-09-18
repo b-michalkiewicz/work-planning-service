@@ -1,16 +1,17 @@
 {
-  "compilerOptions": {
-    "target": "es6",
-    "lib": ["es6", "dom"],
-    "module": "commonjs",
-    "declaration": true,
-    "outDir": "dist",
-    "strict": true,
-    "esModuleInterop": true,
-    "strictNullChecks": true
-  },
-  "include": [
-    "./src/**/*"
-  ],
-  "exclude": ["node_modules", "dist", "coverage"]
+    "compilerOptions": {
+        "module": "commonjs",
+        "declaration": true,
+        "removeComments": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "allowSyntheticDefaultImports": true,
+        "target": "es2017",
+        "sourceMap": true,
+        "outDir": "./dist",
+        "baseUrl": "./",
+        "incremental": true,
+        "skipLibCheck": true,
+        "strict": true
+    }
 }
