@@ -6,19 +6,22 @@ import { Worker } from "./worker";
 
 const ws2020 = new WorkingShift(ShiftDate.create({ year: 2020, month: 1, day: 1 }) as ShiftDate, "day");
 const ws2021 = new WorkingShift(ShiftDate.create({ year: 2021, month: 1, day: 1 }) as ShiftDate, "day");
+const nameWorkerProps = { firstName: "firstName", lastName: "lastName" };
 
 describe("Worker", () => {
     describe("create", () => {
-        it.each<[string, string]>([
-            ["", ""],
-            ["", "last"],
-            ["first", ""],
-        ])("returns error for empty first(%p) or last name(%p)", (...[fn, ln]) => {
-            expect(Worker.create(fn, ln, [])).toEqual(new Error("Worker cannot be created with empty first or last name."));
+        it.each<{ firstName: string; lastName: string }>([
+            { firstName: "", lastName: "" },
+            { firstName: "", lastName: "lastName" },
+            { firstName: "firstName", lastName: "" },
+        ])("returns error for empty first or last name: %p", (nameProps) => {
+            expect(Worker.create({ ...nameProps, workingShifts: [] })).toEqual(
+                new Error("Worker cannot be created with empty first or last name."),
+            );
         });
 
         it("returns error for invalid working shifts", () => {
-            expect(Worker.create("fn", "ln", [ws2020, ws2020])).toEqual(
+            expect(Worker.create({ ...nameWorkerProps, workingShifts: [ws2020, ws2020] })).toEqual(
                 new Error("Worker cannot be created with invalid working shifts."),
             );
         });
@@ -75,11 +78,11 @@ describe("Worker", () => {
     });
 
     const assertAndGetCorrectWorker = (id?: Id) => {
-        const worker = Worker.create("fn", "ln", [ws2020], id);
+        const worker = Worker.create({ ...nameWorkerProps, workingShifts: [ws2020], id });
         if (isError(worker)) fail();
 
-        expect(worker.firstName).toEqual("fn");
-        expect(worker.lastName).toEqual("ln");
+        expect(worker.firstName).toEqual(nameWorkerProps.firstName);
+        expect(worker.lastName).toEqual(nameWorkerProps.lastName);
         expect(worker.workingShifts).toEqual([ws2020]);
         expect(worker.id).toBeDefined();
 

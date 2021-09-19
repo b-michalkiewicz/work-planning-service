@@ -5,49 +5,59 @@ import { ShiftDate } from "../value-objects/shift-date";
 import { WorkingShift } from "../value-objects/working-shift";
 import { isValidWorkingShifts, removeWorkingShift, updateWorkingShift, WorkingShifts } from "../value-objects/working-shifts";
 
-export class Worker {
-    readonly id: Id;
-    readonly firstName: string;
-    readonly lastName: string;
-    private readonly _workingShifts: WorkingShifts;
+export type WorkerProps = {
+    id?: Id;
+    firstName: string;
+    lastName: string;
+    workingShifts: WorkingShifts;
+};
 
-    static create(firstName: string, lastName: string, workingShifts: WorkingShifts, id?: Id): Result<Worker> {
+export class Worker {
+    static create(props: WorkerProps): Result<Worker> {
+        const { firstName, lastName, workingShifts, id } = props;
         if (!firstName || !lastName) return new Error("Worker cannot be created with empty first or last name.");
 
         if (!isValidWorkingShifts(workingShifts)) return new Error("Worker cannot be created with invalid working shifts.");
 
-        return new Worker(firstName, lastName, workingShifts, id);
+        return new Worker({ ...props, id: id ? id : createId() });
     }
 
-    private constructor(firstName: string, lastName: string, workingShifts: WorkingShifts, id?: Id) {
-        this.id = id ? id : createId();
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this._workingShifts = workingShifts;
+    private constructor(private readonly props: WorkerProps & { id: Id }) {}
+
+    get id(): Id {
+        return this.props.id;
     }
 
     get workingShifts(): WorkingShifts {
-        return [...this._workingShifts];
+        return [...this.props.workingShifts];
+    }
+
+    get firstName(): string {
+        return this.props.firstName;
+    }
+
+    get lastName(): string {
+        return this.props.lastName;
     }
 
     assignWorkingShift(workingShift: WorkingShift): Result<Worker> {
-        const newWorkingShifts = [...this._workingShifts, workingShift];
+        const newWorkingShifts = [...this.workingShifts, workingShift];
         if (!isValidWorkingShifts(newWorkingShifts)) return new Error("Shift cannot be added.");
 
-        return new Worker(this.firstName, this.lastName, newWorkingShifts, this.id);
+        return new Worker({ ...this.props, workingShifts: newWorkingShifts });
     }
 
     unassignWorkingShift(onDate: ShiftDate): Result<Worker> {
         const updatedWorkingShifts = removeWorkingShift(this.workingShifts)(onDate);
         if (isError(updatedWorkingShifts)) return updatedWorkingShifts;
 
-        return new Worker(this.firstName, this.lastName, updatedWorkingShifts, this.id);
+        return new Worker({ ...this.props, workingShifts: updatedWorkingShifts });
     }
 
-    changeWorkingShift(onDate: ShiftDate, update: ShiftKind): Result<Worker> {
-        const updatedWorkingShifts = updateWorkingShift(this.workingShifts)(onDate, update);
+    changeWorkingShift(onDate: ShiftDate, toKind: ShiftKind): Result<Worker> {
+        const updatedWorkingShifts = updateWorkingShift(this.workingShifts)(onDate, toKind);
         if (isError(updatedWorkingShifts)) return updatedWorkingShifts;
 
-        return new Worker(this.firstName, this.lastName, updatedWorkingShifts, this.id);
+        return new Worker({ ...this.props, workingShifts: updatedWorkingShifts });
     }
 }
