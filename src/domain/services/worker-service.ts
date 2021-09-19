@@ -1,7 +1,7 @@
 import { Worker, WorkerProps, WorkerUpdate } from "../entities/worker";
 import { WorkerRepository } from "../repositories/worker-repository";
 import { Id } from "../value-objects/id";
-import { isError, Result } from "../value-objects/result";
+import { isError, NotFoundError, Result } from "../value-objects/result";
 import { ShiftKind } from "../value-objects/shift";
 import { ShiftDate } from "../value-objects/shift-date";
 import { WorkingShift } from "../value-objects/working-shift";
@@ -11,7 +11,7 @@ export class WorkerService {
 
     async findWorker(workerId: Id): Promise<Result<Worker>> {
         const worker = await this.repository.getById(workerId);
-        return worker ? worker : new Error(`Worker with ${workerId} not found.`);
+        return worker ? worker : new NotFoundError(`Worker with ${workerId} not found.`);
     }
 
     async removeWorker(workerId: Id): Promise<Result<void>> {

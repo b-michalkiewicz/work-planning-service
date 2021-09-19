@@ -1,5 +1,5 @@
 import { createId, Id } from "../value-objects/id";
-import { isError, Result } from "../value-objects/result";
+import { InvalidInputError, isError, Result } from "../value-objects/result";
 import { ShiftKind } from "../value-objects/shift";
 import { ShiftDate } from "../value-objects/shift-date";
 import { WorkingShift } from "../value-objects/working-shift";
@@ -17,9 +17,10 @@ export type WorkerUpdate = Partial<Pick<WorkerProps, "firstName" | "lastName">>;
 export class Worker {
     static create(props: WorkerProps): Result<Worker> {
         const { firstName, lastName, workingShifts, id } = props;
-        if (!firstName || !lastName) return new Error("Worker cannot be created with empty first or last name.");
+        if (!firstName || !lastName) return new InvalidInputError("Worker cannot be created with empty first or last name.");
 
-        if (!isValidWorkingShifts(workingShifts)) return new Error("Worker cannot be created with invalid working shifts.");
+        if (!isValidWorkingShifts(workingShifts))
+            return new InvalidInputError("Worker cannot be created with invalid working shifts.");
 
         return new Worker({ ...props, id: id ? id : createId() });
     }
@@ -44,7 +45,7 @@ export class Worker {
 
     assignWorkingShift(workingShift: WorkingShift): Result<Worker> {
         const newWorkingShifts = [...this.workingShifts, workingShift];
-        if (!isValidWorkingShifts(newWorkingShifts)) return new Error("Shift cannot be added.");
+        if (!isValidWorkingShifts(newWorkingShifts)) return new InvalidInputError("Shift cannot be added.");
 
         return new Worker({ ...this.props, workingShifts: newWorkingShifts });
     }

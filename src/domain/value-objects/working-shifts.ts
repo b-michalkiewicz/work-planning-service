@@ -1,4 +1,4 @@
-import { Result } from "./result";
+import { NotFoundError, Result } from "./result";
 import { ShiftKind } from "./shift";
 import { ShiftDate } from "./shift-date";
 import { WorkingShift } from "./working-shift";
@@ -21,7 +21,7 @@ const processWorkingShift =
     (workingShifts: WorkingShifts) =>
     (onDate: ShiftDate, processor: (i: number, ws: WorkingShift[]) => void): Result<WorkingShifts> => {
         const toProcessIndex = findWorkingShiftIndex(workingShifts)(onDate);
-        if (toProcessIndex === -1) return new Error(`Shift on ${onDate} not found.`);
+        if (toProcessIndex === -1) return new NotFoundError(`Shift on ${onDate} not found.`);
 
         const result = [...workingShifts];
         processor(toProcessIndex, result);

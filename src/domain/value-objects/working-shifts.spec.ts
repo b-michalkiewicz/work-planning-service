@@ -1,3 +1,4 @@
+import { NotFoundError } from "./result";
 import { ShiftDate } from "./shift-date";
 import { WorkingShift } from "./working-shift";
 import { isValidWorkingShifts, removeWorkingShift, updateWorkingShift, WorkingShifts } from "./working-shifts";
@@ -27,7 +28,7 @@ describe("isValidWorkingShifts", () => {
 describe("removeWorkingShift", () => {
     it("returns error when there is no shift at given date", () => {
         expect(removeWorkingShift([ws2020, ws2021])(ShiftDate.create({ year: 2019, month: 1, day: 1 }) as ShiftDate)).toEqual(
-            new Error("Shift on 2019-01-01 not found."),
+            new NotFoundError("Shift on 2019-01-01 not found."),
         );
     });
 
@@ -42,7 +43,7 @@ describe("updateWorkingShift", () => {
     it("returns error when there is no shift at given date", () => {
         expect(
             updateWorkingShift([ws2020, ws2021])(ShiftDate.create({ year: 2019, month: 1, day: 1 }) as ShiftDate, "night"),
-        ).toEqual(new Error("Shift on 2019-01-01 not found."));
+        ).toEqual(new NotFoundError("Shift on 2019-01-01 not found."));
     });
 
     it("modifies working shifts in happy flow", () => {

@@ -1,7 +1,7 @@
 import { Worker } from "../entities/worker";
 import { WorkerRepository } from "../repositories/worker-repository";
 import { Id } from "../value-objects/id";
-import { isError } from "../value-objects/result";
+import { InvalidInputError, isError, NotFoundError } from "../value-objects/result";
 import { ShiftDate } from "../value-objects/shift-date";
 import { WorkingShift } from "../value-objects/working-shift";
 import { WorkerService } from "./worker-service";
@@ -15,7 +15,7 @@ describe("WorkerService", () => {
         it("returns error when worker is not found", async () => {
             getByIdMock.mockResolvedValue(undefined);
 
-            expect(await service.findWorker(workerId)).toEqual(new Error(`Worker with ${workerId} not found.`));
+            expect(await service.findWorker(workerId)).toEqual(new NotFoundError(`Worker with ${workerId} not found.`));
         });
 
         it("returns worker and calls functions with proper arguments - happy flo", async () => {
@@ -54,7 +54,7 @@ describe("WorkerService", () => {
         it("returns error when worker is not found", async () => {
             getByIdMock.mockResolvedValue(undefined);
 
-            expect(await service.updateWorker(workerId, update)).toEqual(new Error(`Worker with ${workerId} not found.`));
+            expect(await service.updateWorker(workerId, update)).toEqual(new NotFoundError(`Worker with ${workerId} not found.`));
         });
 
         it("returns error when save fails", async () => {
@@ -81,23 +81,25 @@ describe("WorkerService", () => {
         it("returns error when worker is not found", async () => {
             getByIdMock.mockResolvedValue(undefined);
 
-            expect(await service.assignWorkingShift(workerId, ws)).toEqual(new Error(`Worker with ${workerId} not found.`));
+            expect(await service.assignWorkingShift(workerId, ws)).toEqual(
+                new NotFoundError(`Worker with ${workerId} not found.`),
+            );
         });
 
         it("returns error when assignWorkingShift fails", async () => {
             getByIdMock.mockResolvedValue(workerMock);
-            assignWorkingShiftMock.mockReturnValue(new Error("error"));
+            assignWorkingShiftMock.mockReturnValue(new InvalidInputError("error"));
 
-            expect(await service.assignWorkingShift(workerId, ws)).toEqual(new Error("error"));
+            expect(await service.assignWorkingShift(workerId, ws)).toEqual(new InvalidInputError("error"));
             expect(saveMock).toHaveBeenCalledTimes(0);
         });
 
         it("returns error when save fails", async () => {
             getByIdMock.mockResolvedValue(workerMock);
-            saveMock.mockResolvedValue(new Error("error"));
+            saveMock.mockResolvedValue(new InvalidInputError("error"));
             assignWorkingShiftMock.mockReturnValue(workerMock);
 
-            expect(await service.assignWorkingShift(workerId, ws)).toEqual(new Error("error"));
+            expect(await service.assignWorkingShift(workerId, ws)).toEqual(new InvalidInputError("error"));
         });
 
         it("returns worker and calls functions with proper arguments - happy flow", async () => {
@@ -117,15 +119,15 @@ describe("WorkerService", () => {
             getByIdMock.mockResolvedValue(undefined);
 
             expect(await service.unassignWorkingShift(workerId, ws.date)).toEqual(
-                new Error(`Worker with ${workerId} not found.`),
+                new NotFoundError(`Worker with ${workerId} not found.`),
             );
         });
 
         it("returns error when unassignWorkingShift fails", async () => {
             getByIdMock.mockResolvedValue(workerMock);
-            unassignWorkingShiftMock.mockReturnValue(new Error("error"));
+            unassignWorkingShiftMock.mockReturnValue(new InvalidInputError("error"));
 
-            expect(await service.unassignWorkingShift(workerId, ws.date)).toEqual(new Error("error"));
+            expect(await service.unassignWorkingShift(workerId, ws.date)).toEqual(new InvalidInputError("error"));
             expect(saveMock).toHaveBeenCalledTimes(0);
         });
 
@@ -154,15 +156,15 @@ describe("WorkerService", () => {
             getByIdMock.mockResolvedValue(undefined);
 
             expect(await service.changeWorkingShift(workerId, ws.date, "night")).toEqual(
-                new Error(`Worker with ${workerId} not found.`),
+                new NotFoundError(`Worker with ${workerId} not found.`),
             );
         });
 
         it("returns error when changeWorkingShift fails", async () => {
             getByIdMock.mockResolvedValue(workerMock);
-            changeWorkingShiftMock.mockReturnValue(new Error("error"));
+            changeWorkingShiftMock.mockReturnValue(new InvalidInputError("error"));
 
-            expect(await service.changeWorkingShift(workerId, ws.date, "night")).toEqual(new Error("error"));
+            expect(await service.changeWorkingShift(workerId, ws.date, "night")).toEqual(new InvalidInputError("error"));
             expect(saveMock).toHaveBeenCalledTimes(0);
         });
 

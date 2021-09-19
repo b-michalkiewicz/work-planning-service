@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { Worker } from "src/domain/entities/worker";
 import { WorkerRepository } from "src/domain/repositories/worker-repository";
 import { Id } from "src/domain/value-objects/id";
-import { Result } from "src/domain/value-objects/result";
+import { NotFoundError, Result } from "src/domain/value-objects/result";
 
 @Injectable()
 export class InMemoryWorkersRepository implements WorkerRepository {
@@ -23,7 +23,7 @@ export class InMemoryWorkersRepository implements WorkerRepository {
 
     async delete(id: Id): Promise<Result<void>> {
         const inRepo = await this.getById(id);
-        if (!inRepo) return new Error(`Worker with ${id} not found.`);
+        if (!inRepo) return new NotFoundError(`Worker with ${id} not found.`);
         this.workers = this.workers.filter((w) => w.id !== inRepo.id);
     }
 }

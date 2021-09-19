@@ -1,5 +1,6 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { Worker } from "src/domain/entities/worker";
+import { handleDomainError } from "src/domain/error-handler";
 import { WorkerService } from "src/domain/services/worker-service";
 import { Id } from "src/domain/value-objects/id";
 import { isError, Result } from "src/domain/value-objects/result";
@@ -20,11 +21,12 @@ export class WorkersService {
     }
 
     async createWorker(updateDto: CreateWorkerDto): Promise<WorkerDto> {
-        const worker = await this.domainService.createWorker({
-            ...updateDto,
-            workingShifts: this.getWorkingShifts(updateDto.workingShifts),
-        });
-        if (isError(worker)) throw new BadRequestException(worker.message);
+        const worker = handleDomainError(
+            await this.domainService.createWorker({
+                ...updateDto,
+                workingShifts: this.getWorkingShifts(updateDto.workingShifts),
+            }),
+        );
 
         return convertWorkerToDto(worker);
     }
@@ -39,22 +41,17 @@ export class WorkersService {
     }
 
     async findWorker(workerId: Id): Promise<WorkerDto> {
-        const worker = await this.domainService.findWorker(workerId);
-        if (isError(worker)) throw new NotFoundException(worker.message);
-
+        const worker = handleDomainError(await this.domainService.findWorker(workerId));
         return convertWorkerToDto(worker);
     }
 
     async updateWorker(workerId: Id, updateDto: UpdateWorkerDto): Promise<WorkerDto> {
-        const worker = await this.domainService.updateWorker(workerId, updateDto);
-        if (isError(worker)) throw new NotFoundException(worker.message);
-
+        const worker = handleDomainError(await this.domainService.updateWorker(workerId, updateDto));
         return convertWorkerToDto(worker);
     }
 
     async removeWorker(workerId: Id): Promise<void> {
-        const result = await this.domainService.removeWorker(workerId);
-        if (isError(result)) throw new NotFoundException(result.message);
+        handleDomainError(await this.domainService.removeWorker(workerId));
     }
 
     async assignWorkingShift(workerId: Id, workingShiftDto: WorkingShiftDto): Promise<WorkerDto> {
@@ -79,12 +76,7 @@ export class WorkersService {
         shiftDateDto: ShiftDateDto,
         workerProvider: (_: ShiftDate) => Promise<Result<Worker>>,
     ): Promise<WorkerDto> {
-        const shiftDate = ShiftDate.create(shiftDateDto);
-        if (isError(shiftDate)) throw new BadRequestException(shiftDate.message);
-
-        const worker = await workerProvider(shiftDate);
-        if (isError(worker)) throw new NotFoundException(worker.message);
-
-        return convertWorkerToDto(worker);
+        const shiftDate = handleDomainError(ShiftDate.create(shiftDateDto));
+        return convertWorkerToDto(handleDomainError(await workerProvider(shiftDate)));
     }
 }

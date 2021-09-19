@@ -1,4 +1,4 @@
-import { Result } from "./result";
+import { InvalidInputError, Result } from "./result";
 
 export type ShiftDateProps = {
     year: number;
@@ -11,7 +11,7 @@ export class ShiftDate {
 
     static create(props: ShiftDateProps): Result<ShiftDate> {
         return Number.isNaN(new Date(shiftDatePropsToString(props)).valueOf())
-            ? new Error(`ShiftDate cannot be created from ${JSON.stringify(props)}.`)
+            ? new InvalidInputError(`ShiftDate cannot be created from ${JSON.stringify(props)}.`)
             : new ShiftDate(props);
     }
 

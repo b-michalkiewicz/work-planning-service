@@ -1,4 +1,4 @@
-import { isError } from "./result";
+import { InvalidInputError, isError } from "./result";
 import { ShiftDate } from "./shift-date";
 
 describe("ShiftDate", () => {
@@ -23,7 +23,7 @@ describe("ShiftDate", () => {
         const result = ShiftDate.create(input);
 
         if (expectedValue.error) {
-            expect(result).toEqual(new Error(`ShiftDate cannot be created from ${JSON.stringify(input)}.`));
+            expect(result).toEqual(new InvalidInputError(`ShiftDate cannot be created from ${JSON.stringify(input)}.`));
             return;
         }
 

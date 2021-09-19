@@ -1,5 +1,5 @@
 import { createId, Id } from "../value-objects/id";
-import { isError } from "../value-objects/result";
+import { InvalidInputError, isError, NotFoundError } from "../value-objects/result";
 import { ShiftDate } from "../value-objects/shift-date";
 import { WorkingShift } from "../value-objects/working-shift";
 import { Worker } from "./worker";
@@ -16,13 +16,13 @@ describe("Worker", () => {
             { firstName: "firstName", lastName: "" },
         ])("returns error for empty first or last name: %p", (nameProps) => {
             expect(Worker.create({ ...nameProps, workingShifts: [] })).toEqual(
-                new Error("Worker cannot be created with empty first or last name."),
+                new InvalidInputError("Worker cannot be created with empty first or last name."),
             );
         });
 
         it("returns error for invalid working shifts", () => {
             expect(Worker.create({ ...nameWorkerProps, workingShifts: [ws2020, ws2020] })).toEqual(
-                new Error("Worker cannot be created with invalid working shifts."),
+                new InvalidInputError("Worker cannot be created with invalid working shifts."),
             );
         });
 
@@ -37,7 +37,9 @@ describe("Worker", () => {
 
     describe("assignWorkingShift", () => {
         it("returns error when assign more than one working shift in a day", () => {
-            expect(assertAndGetCorrectWorker().assignWorkingShift(ws2020)).toEqual(new Error("Shift cannot be added."));
+            expect(assertAndGetCorrectWorker().assignWorkingShift(ws2020)).toEqual(
+                new InvalidInputError("Shift cannot be added."),
+            );
         });
 
         it("assigns new working shift", () => {
@@ -50,7 +52,7 @@ describe("Worker", () => {
     describe("unassignWorkingShift", () => {
         it("returns error when there is no shift at given day", () => {
             expect(assertAndGetCorrectWorker().unassignWorkingShift(ws2021.date)).toEqual(
-                new Error("Shift on 2021-01-01 not found."),
+                new NotFoundError("Shift on 2021-01-01 not found."),
             );
         });
 
@@ -64,7 +66,7 @@ describe("Worker", () => {
     describe("changeWorkingShift", () => {
         it("returns error when there is no shift at given day", () => {
             expect(assertAndGetCorrectWorker().changeWorkingShift(ws2021.date, "morning")).toEqual(
-                new Error("Shift on 2021-01-01 not found."),
+                new NotFoundError("Shift on 2021-01-01 not found."),
             );
         });
 
