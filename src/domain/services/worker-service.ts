@@ -1,4 +1,4 @@
-import { Worker } from "../entities/worker";
+import { Worker, WorkerProps, WorkerUpdate } from "../entities/worker";
 import { WorkerRepository } from "../repositories/worker-repository";
 import { Id } from "../value-objects/id";
 import { isError, Result } from "../value-objects/result";
@@ -16,6 +16,15 @@ export class WorkerService {
 
     async removeWorker(workerId: Id): Promise<Result<void>> {
         return this.repository.delete(workerId);
+    }
+
+    async createWorker(props: WorkerProps): Promise<Result<Worker>> {
+        const worker = Worker.create(props);
+        return isError(worker) ? worker : this.repository.save(worker);
+    }
+
+    async updateWorker(workerId: Id, update: WorkerUpdate): Promise<Result<Worker>> {
+        return this.mapAndSafeWorker(workerId, (worker) => worker.update(update));
     }
 
     async assignWorkingShift(workerId: Id, workingShift: WorkingShift): Promise<Result<Worker>> {

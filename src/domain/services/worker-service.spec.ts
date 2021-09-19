@@ -1,6 +1,7 @@
 import { Worker } from "../entities/worker";
 import { WorkerRepository } from "../repositories/worker-repository";
 import { Id } from "../value-objects/id";
+import { isError } from "../value-objects/result";
 import { ShiftDate } from "../value-objects/shift-date";
 import { WorkingShift } from "../value-objects/working-shift";
 import { WorkerService } from "./worker-service";
@@ -22,6 +23,57 @@ describe("WorkerService", () => {
 
             expect(await service.findWorker(workerId)).toEqual(workerMock);
             expect(getByIdMock).toHaveBeenCalledWith(workerId);
+        });
+    });
+
+    describe("createWorker", () => {
+        const workerProps = { firstName: "firstName", lastName: "lastName", workingShifts: [] };
+        it("returns error when worker create fails", async () => {
+            const result = await service.createWorker({ ...workerProps, firstName: "" });
+
+            if (!isError(result)) fail();
+            expect(saveMock).toHaveBeenCalledTimes(0);
+        });
+
+        it("returns error when save fails", async () => {
+            saveMock.mockResolvedValue(new Error("error"));
+
+            expect(await service.createWorker(workerProps)).toEqual(new Error("error"));
+        });
+
+        it("returns worker happy flow", async () => {
+            saveMock.mockResolvedValue(workerMock);
+
+            expect(await service.createWorker(workerProps)).toEqual(workerMock);
+            expect(saveMock).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    describe("updateWorker", () => {
+        const update = { firstName: "update" };
+        it("returns error when worker is not found", async () => {
+            getByIdMock.mockResolvedValue(undefined);
+
+            expect(await service.updateWorker(workerId, update)).toEqual(new Error(`Worker with ${workerId} not found.`));
+        });
+
+        it("returns error when save fails", async () => {
+            getByIdMock.mockResolvedValue(workerMock);
+            updateMock.mockReturnValueOnce(workerMock);
+            saveMock.mockResolvedValue(new Error("error"));
+
+            expect(await service.updateWorker(workerId, update)).toEqual(new Error("error"));
+        });
+
+        it("returns worker and calls functions with proper arguments - happy flow", async () => {
+            getByIdMock.mockResolvedValue(workerMock);
+            updateMock.mockReturnValueOnce(workerMock);
+            saveMock.mockResolvedValue(workerMock);
+
+            expect(await service.updateWorker(workerId, update)).toEqual(workerMock);
+            expect(getByIdMock).toHaveBeenCalledWith(workerId);
+            expect(saveMock).toHaveBeenCalledWith(workerMock);
+            expect(updateMock).toHaveBeenCalledWith(update);
         });
     });
 
@@ -147,10 +199,12 @@ const mockRepository: WorkerRepository = {
 const assignWorkingShiftMock = jest.fn();
 const unassignWorkingShiftMock = jest.fn();
 const changeWorkingShiftMock = jest.fn();
+const updateMock = jest.fn();
 const workerMock: Worker = {
     assignWorkingShift: assignWorkingShiftMock as any,
     unassignWorkingShift: unassignWorkingShiftMock as any,
     changeWorkingShift: changeWorkingShiftMock as any,
+    update: updateMock as any,
 } as Worker;
 
 const service = new WorkerService(mockRepository);

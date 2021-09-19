@@ -12,6 +12,8 @@ export type WorkerProps = {
     workingShifts: WorkingShifts;
 };
 
+export type WorkerUpdate = Partial<Pick<WorkerProps, "firstName" | "lastName">>;
+
 export class Worker {
     static create(props: WorkerProps): Result<Worker> {
         const { firstName, lastName, workingShifts, id } = props;
@@ -59,5 +61,9 @@ export class Worker {
         if (isError(updatedWorkingShifts)) return updatedWorkingShifts;
 
         return new Worker({ ...this.props, workingShifts: updatedWorkingShifts });
+    }
+
+    update(update: WorkerUpdate): Worker {
+        return new Worker({ ...this.props, ...update });
     }
 }
