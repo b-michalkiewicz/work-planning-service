@@ -1,9 +1,8 @@
 {
     "name": "work-planning-service",
     "version": "0.0.1",
-    "description": "",
-    "author": "",
-    "private": true,
+    "author": "Bartosz Michalkiewicz <bmichalkiewicz@gmail.com>",
+    "description": "Work planning service in (reasonable) DDD",
     "license": "UNLICENSED",
     "scripts": {
         "prebuild": "rimraf dist",
