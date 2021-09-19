@@ -1,11 +1,15 @@
-import { IsNotEmpty } from "class-validator";
+import { Type } from "class-transformer";
+import { IsArray, IsNotEmpty, ValidateNested } from "class-validator";
 import { WorkerProps } from "src/domain/entities/worker";
-import { WorkingShifts } from "src/domain/value-objects/working-shifts";
+import { WorkingShiftDto } from "./working-shift.dto";
 
-export class CreateWorkerDto implements WorkerProps {
+export class CreateWorkerDto implements Omit<WorkerProps, "id" | "workingShifts"> {
     @IsNotEmpty()
     firstName!: string;
     @IsNotEmpty()
     lastName!: string;
-    workingShifts: WorkingShifts = [];
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => WorkingShiftDto)
+    workingShifts!: WorkingShiftDto[];
 }
