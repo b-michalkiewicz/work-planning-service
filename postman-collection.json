@@ -1,0 +1,209 @@
+{
+	"info": {
+		"_postman_id": "79e0437e-36e8-4e54-9ce1-f71b7b32daf6",
+		"name": "Work planning service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get worker",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/workers/{{workerId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"workers",
+						"{{workerId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create worker",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"postman.setEnvironmentVariable(\"workerId\", jsonData.id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstName\": \"Joe\",\n    \"lastName\": \"Dde\",\n    \"workingShifts\": [{\"kind\": \"morning\", \"date\": {\"year\": 2020, \"month\": 1, \"day\": 1}},{\"kind\": \"morning\", \"date\": {\"year\": 2020, \"month\": 1, \"day\": 11}}]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/workers/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"workers",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create shift",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"kind\": \"morning\", \"date\": {\"year\": 2020, \"month\": 1, \"day\": 13}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/workers/{{workerId}}/shifts",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"workers",
+						"{{workerId}}",
+						"shifts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update shift",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"kind\": \"day\", \"date\": {\"year\": 2020, \"month\": 1, \"day\": 23}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/workers/{{workerId}}/shifts",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"workers",
+						"{{workerId}}",
+						"shifts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete shift",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"year\": 2020, \"month\": 1, \"day\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/workers/{{workerId}}/shifts",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"workers",
+						"{{workerId}}",
+						"shifts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update worker",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstName\": \"John\",\n    \"lastName\": \"Smith\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/workers/{{workerId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"workers",
+						"{{workerId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete worker",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/workers/{{workerId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"workers",
+						"{{workerId}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
