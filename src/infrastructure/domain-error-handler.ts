@@ -1,5 +1,5 @@
 import { BadRequestException, InternalServerErrorException, NotFoundException } from "@nestjs/common";
-import { isError, isInvalidInputError, isNotFoundError, Result } from "./value-objects/result";
+import { isError, isInvalidInputError, isNotFoundError, Result } from "../domain/value-objects/result";
 
 export const handleDomainError = <T>(result: Result<T>) => {
     if (isInvalidInputError(result)) throw new BadRequestException(result.message);

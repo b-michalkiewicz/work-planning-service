@@ -1,4 +1,4 @@
-import { Injectable, Inject } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { WorkerRepository } from "src/domain/repositories/worker-repository";
 import { WorkerService } from "src/domain/services/worker-service";
 
